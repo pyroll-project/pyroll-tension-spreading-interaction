@@ -1,0 +1,63 @@
+%! suppress = TooLargeSection
+%! suppress = SentenceEndWithCapital
+%! suppress = TooLargeSection
+% Preamble
+\documentclass[11pt]{PyRollDocs}
+\usepackage{textcomp}
+\usepackage{csquotes}
+\usepackage{wasysym}
+
+\addbibresource{refs.bib}
+% Document
+\begin{document}
+
+    \title{Karman Power and Labour PyRolL Plugin}
+    \author{Christoph Renzing}
+    \date{\today}
+
+    \maketitle
+
+    The PyRolL plugin pyroll-tension-spreading-interaction calculates the tension influenced spread of the rolled profile.
+    The model was published by \textcite{Dobler1998, MaukDobler1999} using data from \textcite{Nikkilä1977} and \textcite{Treis1968}.
+
+
+    \section{Model approach}\label{sec:model-approach}
+    To incorporate the effect of longitudinal tensions into the process of groove rolling, \textcite{Dobler1998} developed an empirical model derived from different measurements by \textcite{Nikkilä1977} and \textcite{Treis1968}.
+    The model is applied by defining a \enquote{tension free logarithmic elongation} as well as a \enquote{tension influenced logarithmic elongation}.
+    Both values are combined using superposition according to \autoref{eq:tension-superposition}
+
+    \begin{equation}
+        \varphi_l = \varphi_{l, \sigma=0} + \Delta\varphi_{l, \sigma}
+        \label{eq:tension-superposition}
+    \end{equation}
+
+    \section{Usage instructions}\label{sec:usage-instructions}
+    The plugin can be loaded under the name \texttt{pyroll\_karman\_power\_and\_labour}.
+
+    An implementation of the \lstinline{roll_force} and \lstinline{mean_neutral_plane_position} hook on \lstinline{RollPass} is provided.
+    Furthermore, an implementation of the \lstinline{roll_torque} hook on \lstinline{RollPass.Roll} is provided.
+
+    Additionally, hooks on \lstinline{RollPass} are defined, which are used in the calculation, as listed in \autoref{tab:hookspecs}.
+    The hooks \lstinline{mean_front_tension}, \lstinline{mean_back_tension} and \lstinline{coulomb_friction_coefficient} have to set and adjusted individually.
+
+    \begin{table}
+        \centering
+        \caption{Hooks specified by this plugin.}
+        \label{tab:hookspecs}
+        \begin{tabular}{ll}
+            \toprule
+            Hook name                               & Meaning                                                \\
+            \midrule
+            \texttt{coulomb\_friction\_coefficient} & Coulomb's friction coefficient $\mu$                   \\
+            \texttt{mean\_back\_tension}            & Mean back tension of the roll pass $\sigma_{x,0}$      \\
+            \texttt{mean\_front\_tension}           & Mean front tension of the roll pass $\sigma_{x,1}$     \\
+            \texttt{mean\_neutral\_plane\_position} & Mean neutral plane postion $x_N$                       \\
+            \texttt{karman\_solution}               & KarmanSolver object with solution values as attributes \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \printbibliography
+
+
+\end{document}
