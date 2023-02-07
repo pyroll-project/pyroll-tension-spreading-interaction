@@ -31,6 +31,19 @@
         \label{eq:tension-superposition}
     \end{equation}
 
+    The tension influenced logarithmic elongation $\Delta\varphi_{l, \sigma}$ is treated as a function (\autoref{eq:tension-function}) of the mean flow stress ($k_{f,m}$), the acting tension stresses ($\sigma_{l,0}$,$\sigma_{l,1}$) as well as cross-section change.
+    $\sigma_{l,0}$ is the acting mean back tension and $\sigma_{l,1}$ the mean front tension.
+    Another influencing parameter which is treated indirectly is the strain rate $\dot{\varphi}$.
+    This value is incorporated by the flow stress.
+    Therefore,to achieve better calculative results a flow stress model incorporating the strain rate should be chosen.
+
+    \begin{gather}
+        x_0 = \frac{\sigma_{l, 0}}{k_{f,m}}\\
+        x_1 = \frac{\sigma_{l, 1}}{k_{f,m}}\\
+        \Delta\varphi_{l, \sigma} = f \left( x_0, x_1, \epsilon_h, \frac{b_0}{h_0}m \frac{A_d}{A_m} \right)
+    \end{gather}
+
+
     \section{Usage instructions}\label{sec:usage-instructions}
     The plugin can be loaded under the name \texttt{pyroll\_karman\_power\_and\_labour}.
 
