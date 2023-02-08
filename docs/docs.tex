@@ -11,7 +11,7 @@
 % Document
 \begin{document}
 
-    \title{Karman Power and Labour PyRolL Plugin}
+    \title{Tension spreading interaction PyRolL Plugin}
     \author{Christoph Renzing}
     \date{\today}
 
@@ -31,27 +31,63 @@
         \label{eq:tension-superposition}
     \end{equation}
 
-    The tension influenced logarithmic elongation $\Delta\varphi_{l, \sigma}$ is treated as a function (\autoref{eq:tension-function}) of the mean flow stress ($k_{f,m}$), the acting tension stresses ($\sigma_{l,0}$,$\sigma_{l,1}$) as well as cross-section change.
+    The tension influenced logarithmic elongation $\Delta\varphi_{l, \sigma}$ is treated as a function of the mean flow stress ($k_{f,m}$), the acting tension stresses ($\sigma_{l,0}$,$\sigma_{l,1}$) as well as cross-section change.
     $\sigma_{l,0}$ is the acting mean back tension and $\sigma_{l,1}$ the mean front tension.
     Another influencing parameter which is treated indirectly is the strain rate $\dot{\varphi}$.
     This value is incorporated by the flow stress.
     Therefore,to achieve better calculative results a flow stress model incorporating the strain rate should be chosen.
+    The influence of friction is incorporated by the drought $\epsilon_h$ as well as the roll gap ratio $\frac{b_0}{h_0}$ as well as the ratio of contact area and mean profile cross-section $\frac{A_d}{A_m}$.
 
     \begin{gather}
+        k_{f,m} = \frac{k_{f,0} + 2 k_{f,1} }{3} \\
         x_0 = \frac{\sigma_{l, 0}}{k_{f,m}}\\
         x_1 = \frac{\sigma_{l, 1}}{k_{f,m}}\\
+        A_m = \frac{A_0 + 2 A_1 }{3} \\
         \Delta\varphi_{l, \sigma} = f \left( x_0, x_1, \epsilon_h, \frac{b_0}{h_0}m \frac{A_d}{A_m} \right)
     \end{gather}
 
+    From measurements by \textcite{Nikkilä1977} and \textcite{Treis1968}, Dobler~\cite{Dobler1998} came to the conclusion that the backward tension $x_0$ has a quadratic influence and the influence of the front tension $x_1$ could be model by a linear approach.
+    He therefore published the following equation for calculation of the tension influenced elongation:
+
+    \begin{equation}
+        \Delta \varphi_{l, \sigma} = k_1 x_0^2 + k_2 x_0 + k_3 x_1
+        \label{eq:dobler-model}
+    \end{equation}
+
+    The coefficients included in this formula are functions of the geometric parameters and are calculated by a linear relationship.
+
+    \begin{equation}
+        k_i = m_{i,1} \epsilon_h + m_{i,2} \frac{b_0}{h_0} + m_3 \frac{A_d}{A_m}
+        \label{eq:dobler-coefficients}
+    \end{equation}
+
+    The values for the coefficients $m_{i,j}$ where calculated by \textcite{Dobler1998} using an equilibrium calculation for overdetermined linear systems of equations.
+
+    \begin{table}
+        \centering
+        \caption{Coefficients for calculation of the tension influenced elongation $\varphi_{l, \sigma}$.}
+        \label{tab:dobler-coefficients}
+        \begin{tabular}{llll}
+            \toprule
+            i & $m_{i,1}$ & $m_{i,2}$   & $m_{i,3}$ \\
+            \midrule
+            1 & 1.05502   & 0.100816    & -0.591029 \\
+            2 & -0.886507 & -0.00258613 & 0.159971  \\
+            3 & -0.347681 & -0.0457338  & 0.0525161 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    The statistical evaluation of calculated and measured forming influenced elongations shows a determination of 92.91\%.
+
 
     \section{Usage instructions}\label{sec:usage-instructions}
-    The plugin can be loaded under the name \texttt{pyroll\_karman\_power\_and\_labour}.
+    The plugin can be loaded under the name \texttt{pyroll\_tension\_spreading\_interaction}.
 
-    An implementation of the \lstinline{roll_force} and \lstinline{mean_neutral_plane_position} hook on \lstinline{RollPass} is provided.
-    Furthermore, an implementation of the \lstinline{roll_torque} hook on \lstinline{RollPass.Roll} is provided.
+    An implementation of the \lstinline{log_elongation} hook on \lstinline{RollPass} is provided.
+    Furthermore, an implementation of the \lstinline{width} hook on \lstinline{RollPass.OutProfile} is provided.
 
     Additionally, hooks on \lstinline{RollPass} are defined, which are used in the calculation, as listed in \autoref{tab:hookspecs}.
-    The hooks \lstinline{mean_front_tension}, \lstinline{mean_back_tension} and \lstinline{coulomb_friction_coefficient} have to set and adjusted individually.
 
     \begin{table}
         \centering
@@ -59,13 +95,10 @@
         \label{tab:hookspecs}
         \begin{tabular}{ll}
             \toprule
-            Hook name                               & Meaning                                                \\
+            Hook name                               & Meaning                                                 \\
             \midrule
-            \texttt{coulomb\_friction\_coefficient} & Coulomb's friction coefficient $\mu$                   \\
-            \texttt{mean\_back\_tension}            & Mean back tension of the roll pass $\sigma_{x,0}$      \\
-            \texttt{mean\_front\_tension}           & Mean front tension of the roll pass $\sigma_{x,1}$     \\
-            \texttt{mean\_neutral\_plane\_position} & Mean neutral plane postion $x_N$                       \\
-            \texttt{karman\_solution}               & KarmanSolver object with solution values as attributes \\
+            \texttt{tension\_model}                 & Tension model of Dobler and Mauk                        \\
+            \texttt{log\_elongation\_with\_tension} & Mean back tension of the roll pass $\varphi_{l,\sigma}$ \\
             \bottomrule
         \end{tabular}
     \end{table}
