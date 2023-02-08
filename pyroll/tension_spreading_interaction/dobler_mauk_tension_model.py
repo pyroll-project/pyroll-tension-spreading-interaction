@@ -34,4 +34,4 @@ class TensionElongationModel:
         self.log_elongation_through_tension = self.elongation_through_tension()
 
     def elongation_through_tension(self):
-        return self.first_coefficient * self.rel_back_tension ** 2 + self.second_coefficient + self.rel_back_tension + self.third_coefficient * self.rel_front_tension
+        return self.first_coefficient * self.rel_back_tension ** 2 + self.second_coefficient * self.rel_back_tension + self.third_coefficient * self.rel_front_tension

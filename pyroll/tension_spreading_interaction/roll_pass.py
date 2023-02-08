@@ -22,9 +22,7 @@ def log_elongation_with_tension(self: RollPass):
 
 
 @RollPass.log_elongation
-def log_elongation(self: RollPass, cycle: bool):
-    if cycle:
-        return None
+def log_elongation(self: RollPass):
     return self.log_elongation_with_tension
 
 
@@ -41,4 +39,4 @@ def width(self: RollPass.OutProfile):
 
     log.info(f"Calculated spread with tension influence: {spread}.")
 
-    return spread
+    return 0
