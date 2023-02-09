@@ -4,7 +4,7 @@ packages = [
 ]
 
 [version]
-path = "pyroll/tension-spreading-interaction/__init__.py"
+path = "pyroll/tension_spreading_interaction/__init__.py"
 
 [envs.default]
 path = ".venv"
