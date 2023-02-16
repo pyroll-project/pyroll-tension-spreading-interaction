@@ -34,8 +34,8 @@ def test_solve(tmp_path: Path, caplog):
                 rotational_frequency=1
             ),
             gap=2e-3,
-            mean_front_tension=6e6,
-            mean_back_tension=0
+            front_tension=6e6,
+            back_tension=0
         ),
         Transport(
             label="I => II",
@@ -53,8 +53,8 @@ def test_solve(tmp_path: Path, caplog):
                 rotational_frequency=1
             ),
             gap=2e-3,
-            mean_back_tension=6e6,
-            mean_front_tension=0
+            back_tension=6e6,
+            front_tension=0
         ),
     ])
 

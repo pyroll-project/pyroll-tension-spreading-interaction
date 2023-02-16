@@ -17,8 +17,11 @@ classifiers = [
 ]
 
 requires-python = ">=3.9, <4.0"
-dependencies = ["pyroll-core ~= 2.0.0b",
-    "pyroll-sparling-spreading ~=2.0.0b"]
+dependencies = ["pyroll-core ~= 2.0.0"]
+
+[project.optional-dependencies]
+pyroll-sander-spreading = [
+    "pyroll-sparling-spreading ~=2.0.0"]
 
 dynamic = ["version"]
 
