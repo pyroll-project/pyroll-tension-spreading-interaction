@@ -1,4 +1,4 @@
 from . import roll_pass
 
-VERSION = "2.0.0b"
+VERSION = "2.0.0"
 
