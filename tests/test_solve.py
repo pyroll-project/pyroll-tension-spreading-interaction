@@ -8,7 +8,7 @@ from pyroll.core import Profile, PassSequence, RollPass, Roll, CircularOvalGroov
 def test_solve(tmp_path: Path, caplog):
     caplog.set_level(logging.INFO, logger="pyroll")
 
-    import pyroll.sparling_spreading
+    import pyroll.wusatowski_spreading
     import pyroll.tension_spreading_interaction
 
     in_profile = Profile.round(
