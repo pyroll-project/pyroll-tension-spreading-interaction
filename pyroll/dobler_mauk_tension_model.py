@@ -2,7 +2,7 @@ import numpy as np
 from pyroll.core import RollPass, Hook
 from dataclasses import dataclass
 
-VERSION = "2.0.1"
+VERSION = "2.1"
 
 
 @dataclass
