@@ -4,13 +4,13 @@ packages = [
 ]
 
 [version]
-path = "pyroll/tension_spreading_interaction/__init__.py"
+path = "pyroll/dobler_mauk_tension_model.py"
 
 [envs.default]
 path = ".venv"
 dependencies = [
     "pytest ~= 7.0",
-    "pyroll-report ~= 2.0.0b",
+    "pyroll-report ~= 2.0",
 ]
 
 

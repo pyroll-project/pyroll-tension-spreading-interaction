@@ -9,7 +9,7 @@ def test_solve(tmp_path: Path, caplog):
     caplog.set_level(logging.INFO, logger="pyroll")
 
     import pyroll.wusatowski_spreading
-    import pyroll.tension_spreading_interaction
+    import pyroll.dobler_mauk_tension_model
 
     in_profile = Profile.round(
         diameter=30e-3,

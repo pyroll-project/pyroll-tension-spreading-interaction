@@ -1,5 +1,8 @@
-from pyroll.core import RollPass
+import numpy as np
+from pyroll.core import RollPass, Hook
 from dataclasses import dataclass
+
+VERSION = "2.0.1"
 
 
 @dataclass
@@ -35,7 +38,30 @@ class TensionElongationModel:
         self.third_coefficient = self.m31 * self.rp.rel_draught + self.m32 * (
                 self.rp.in_profile.width / self.rp.in_profile.height) + self.m33 * (
                                          self.rp.roll.contact_area / self.mean_cross_section)
-        self.log_elongation_through_tension = self.elongation_through_tension()
+        self.log_elongation_through_tension = self.tension_elongation()
 
-    def elongation_through_tension(self):
+    def tension_elongation(self):
         return self.first_coefficient * self.rel_back_tension ** 2 + self.second_coefficient * self.rel_back_tension + self.third_coefficient * self.rel_front_tension
+
+
+RollPass.tension_model = Hook[TensionElongationModel]()
+"""Tension model according to Dobler and Mauk."""
+
+
+@RollPass.tension_model
+def tension_model(self: RollPass):
+    return TensionElongationModel(self)
+
+
+@RollPass.spread(wrapper=True)
+def spread(self: RollPass, cycle):
+    if cycle:
+        return None
+
+    spread_without_tension = (yield)
+
+    elongation_with_tension = np.exp(self.log_elongation + self.tension_model.log_elongation_through_tension)
+    spread_with_tension = (spread_without_tension * self.draught * self.elongation) / (
+            self.draught * elongation_with_tension)
+
+    return spread_with_tension
