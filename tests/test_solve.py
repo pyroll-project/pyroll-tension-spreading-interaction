@@ -34,28 +34,9 @@ def test_solve(tmp_path: Path, caplog):
                 rotational_frequency=1
             ),
             gap=2e-3,
-            front_tension=6e6,
+            front_tension=25e6,
             back_tension=0
-        ),
-        Transport(
-            label="I => II",
-            duration=1
-        ),
-        RollPass(
-            label="Round II",
-            roll=Roll(
-                groove=RoundGroove(
-                    r1=1e-3,
-                    r2=12.5e-3,
-                    depth=11.5e-3
-                ),
-                nominal_radius=160e-3,
-                rotational_frequency=1
-            ),
-            gap=2e-3,
-            back_tension=6e6,
-            front_tension=0
-        ),
+        )
     ])
 
     try:

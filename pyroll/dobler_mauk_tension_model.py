@@ -2,7 +2,7 @@ import numpy as np
 from pyroll.core import RollPass, Hook
 from dataclasses import dataclass
 
-VERSION = "2.1"
+VERSION = "2.1.1"
 
 
 @dataclass
@@ -21,31 +21,12 @@ class TensionElongationModel:
     m32: float = -0.0457338
     m33: float = 0.0525161
 
-    def __post_init__(self):
-        self.mean_flow_stress = (self.rp.in_profile.flow_stress + 2 * self.rp.out_profile.flow_stress) / 3
-        self.mean_cross_section = (
-                                          self.rp.in_profile.cross_section.area + 2 * self.rp.out_profile.cross_section.area) / 3
-
-        self.rel_back_tension = self.rp.back_tension / self.mean_flow_stress
-        self.rel_front_tension = self.rp.front_tension / self.mean_flow_stress
-
-        self.first_coefficient = self.m11 * self.rp.rel_draught + self.m12 * (
-                self.rp.in_profile.width / self.rp.in_profile.height) + self.m13 * (
-                                         self.rp.roll.contact_area / self.mean_cross_section)
-        self.second_coefficient = self.m21 * self.rp.rel_draught + self.m22 * (
-                self.rp.in_profile.width / self.rp.in_profile.height) + self.m23 * (
-                                          self.rp.roll.contact_area / self.mean_cross_section)
-        self.third_coefficient = self.m31 * self.rp.rel_draught + self.m32 * (
-                self.rp.in_profile.width / self.rp.in_profile.height) + self.m33 * (
-                                         self.rp.roll.contact_area / self.mean_cross_section)
-        self.log_elongation_through_tension = self.tension_elongation()
-
-    def tension_elongation(self):
-        return self.first_coefficient * self.rel_back_tension ** 2 + self.second_coefficient * self.rel_back_tension + self.third_coefficient * self.rel_front_tension
-
 
 RollPass.tension_model = Hook[TensionElongationModel]()
 """Tension model according to Dobler and Mauk."""
+
+RollPass.log_tension_elongation = Hook[float]()
+"""Logarithmic elongation of the profile due to tension."""
 
 
 @RollPass.tension_model
@@ -53,15 +34,52 @@ def tension_model(self: RollPass):
     return TensionElongationModel(self)
 
 
-@RollPass.spread(wrapper=True)
-def spread(self: RollPass, cycle):
+@RollPass.log_tension_elongation
+def log_tension_elongation(self: RollPass):
+    mean_flow_stress = (self.in_profile.flow_stress + 2 * self.out_profile.flow_stress) / 3
+    mean_cross_section = (self.in_profile.cross_section.area + 2 * self.out_profile.cross_section.area) / 3
+
+    relative_back_tension = self.back_tension / mean_flow_stress
+    relative_front_tension = self.front_tension / mean_flow_stress
+
+    profile_aspect_ratio = self.in_profile.equivalent_width / self.in_profile.equivalent_height
+    area_ratio = self.roll.contact_area / mean_cross_section
+
+    first_coefficient = self.tension_model.m11 * self.rel_draught + self.tension_model.m12 * profile_aspect_ratio + self.tension_model.m13 * area_ratio
+    second_coefficient = self.tension_model.m21 * self.rel_draught + self.tension_model.m22 * profile_aspect_ratio + self.tension_model.m23 * area_ratio
+    third_coefficient = self.tension_model.m31 * self.rel_draught + self.tension_model.m32 * profile_aspect_ratio + self.tension_model.m33 * area_ratio
+
+    return first_coefficient * relative_back_tension ** 2 + second_coefficient * relative_back_tension + third_coefficient * relative_front_tension
+
+
+# @RollPass.spread(wrapper=True)
+# def spread(self: RollPass, cycle):
+#    if cycle:
+#        return None
+#
+#    spread_without_tension = (yield)
+#
+#    elongation_with_tension = np.exp(self.log_elongation + self.log_tension_elongation)
+#    spread_with_tension = (spread_without_tension * self.draught * self.elongation) / (
+#            self.draught * elongation_with_tension)
+#
+#    return spread_with_tension
+
+
+@RollPass.OutProfile.width(wrapper=True)
+def width_with_tension(self: RollPass.OutProfile, cycle):
     if cycle:
         return None
 
-    spread_without_tension = (yield)
+    out_profile_width_without_tension = (yield)
+    self.__cache__["width"] = out_profile_width_without_tension
 
-    elongation_with_tension = np.exp(self.log_elongation + self.tension_model.log_elongation_through_tension)
-    spread_with_tension = (spread_without_tension * self.draught * self.elongation) / (
-            self.draught * elongation_with_tension)
+    rp = self.roll_pass
 
-    return spread_with_tension
+    spread_without_tension = out_profile_width_without_tension / rp.in_profile.width
+
+    elongation_with_tension = np.exp(rp.log_elongation + rp.log_tension_elongation)
+    spread_with_tension = (spread_without_tension * rp.draught * rp.elongation) / (
+            rp.draught * elongation_with_tension)
+
+    return  rp.in_profile.width * spread_with_tension
