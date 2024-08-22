@@ -9,7 +9,7 @@ def test_solve(tmp_path: Path, caplog):
     caplog.set_level(logging.INFO, logger="pyroll")
 
     import pyroll.wusatowski_spreading
-    import pyroll.dobler_mauk_tension_model
+    import pyroll.tension_spreading_interaction
 
     in_profile = Profile.round(
         diameter=30e-3,
@@ -51,7 +51,7 @@ def test_solve(tmp_path: Path, caplog):
         report = pyroll.report.report(sequence)
 
         report_file = tmp_path / "report.html"
-        report_file.write_text(report)
+        report_file.write_text(report, encoding="utf-8")
         print(report_file)
         webbrowser.open(report_file.as_uri())
 
