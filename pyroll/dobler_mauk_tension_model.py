@@ -1,8 +1,8 @@
 import numpy as np
-from pyroll.core import RollPass, Hook
+from pyroll.core import BaseRollPass, Hook
 from dataclasses import dataclass
 
-VERSION = "2.1.1"
+VERSION = "3.0.0"
 
 
 @dataclass
@@ -10,7 +10,7 @@ class TensionElongationModel:
     """
     Class representing an elongation model through tension published by Mauk and Dobler.
     """
-    rp: RollPass
+    rp: BaseRollPass
     m11: float = 1.05502
     m12: float = 0.100816
     m13: float = -0.591029
@@ -22,20 +22,20 @@ class TensionElongationModel:
     m33: float = 0.0525161
 
 
-RollPass.tension_model = Hook[TensionElongationModel]()
+BaseRollPass.tension_model = Hook[TensionElongationModel]()
 """Tension model according to Dobler and Mauk."""
 
-RollPass.log_tension_elongation = Hook[float]()
+BaseRollPass.log_tension_elongation = Hook[float]()
 """Logarithmic elongation of the profile due to tension."""
 
 
-@RollPass.tension_model
-def tension_model(self: RollPass):
+@BaseRollPass.tension_model
+def tension_model(self: BaseRollPass):
     return TensionElongationModel(self)
 
 
-@RollPass.log_tension_elongation
-def log_tension_elongation(self: RollPass):
+@BaseRollPass.log_tension_elongation
+def log_tension_elongation(self: BaseRollPass):
     mean_flow_stress = (self.in_profile.flow_stress + 2 * self.out_profile.flow_stress) / 3
     mean_cross_section = (self.in_profile.cross_section.area + 2 * self.out_profile.cross_section.area) / 3
 
@@ -52,8 +52,8 @@ def log_tension_elongation(self: RollPass):
     return first_coefficient * relative_back_tension ** 2 + second_coefficient * relative_back_tension + third_coefficient * relative_front_tension
 
 
-# @RollPass.spread(wrapper=True)
-# def spread(self: RollPass, cycle):
+# @BaseRollPass.spread(wrapper=True)
+# def spread(self: BaseRollPass, cycle):
 #    if cycle:
 #        return None
 #
@@ -66,8 +66,8 @@ def log_tension_elongation(self: RollPass):
 #    return spread_with_tension
 
 
-@RollPass.OutProfile.width(wrapper=True)
-def width_with_tension(self: RollPass.OutProfile, cycle):
+@BaseRollPass.OutProfile.width(wrapper=True)
+def width_with_tension(self: BaseRollPass.OutProfile, cycle):
     if cycle:
         return None
 
