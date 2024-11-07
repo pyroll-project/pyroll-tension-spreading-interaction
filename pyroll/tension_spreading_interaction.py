@@ -52,20 +52,6 @@ def log_tension_elongation(self: BaseRollPass):
     return first_coefficient * relative_back_tension ** 2 + second_coefficient * relative_back_tension + third_coefficient * relative_front_tension
 
 
-# @BaseRollPass.spread(wrapper=True)
-# def spread(self: BaseRollPass, cycle):
-#    if cycle:
-#        return None
-#
-#    spread_without_tension = (yield)
-#
-#    elongation_with_tension = np.exp(self.log_elongation + self.log_tension_elongation)
-#    spread_with_tension = (spread_without_tension * self.draught * self.elongation) / (
-#            self.draught * elongation_with_tension)
-#
-#    return spread_with_tension
-
-
 @BaseRollPass.OutProfile.width(wrapper=True)
 def width_with_tension(self: BaseRollPass.OutProfile, cycle):
     if cycle:
@@ -82,4 +68,4 @@ def width_with_tension(self: BaseRollPass.OutProfile, cycle):
     spread_with_tension = (spread_without_tension * rp.draught * rp.elongation) / (
             rp.draught * elongation_with_tension)
 
-    return  rp.in_profile.width * spread_with_tension
+    return rp.in_profile.width * spread_with_tension
