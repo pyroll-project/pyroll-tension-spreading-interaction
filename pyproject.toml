@@ -1,6 +1,6 @@
 [project]
 name = "pyroll-tension-spreading-interaction"
-description = "Plugin for PyRollL providing a model calculating the influence of tension on spreading."
+description = "Plugin for PyRolL providing a model calculating the influence of tension on spreading."
 authors = [
     { name = "Christoph Renzing", email = "christoph.renzing@imf.tu-freiberg.de" }
 ]
