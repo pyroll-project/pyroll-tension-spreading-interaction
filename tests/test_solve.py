@@ -5,10 +5,20 @@ from pathlib import Path
 from pyroll.core import Profile, PassSequence, RollPass, Roll, CircularOvalGroove, Transport, RoundGroove
 
 
+@Profile.equivalent_width
+def equivalent_width_for_maximum_width_method(self: Profile):
+    return self.width
+
+
+@Profile.equivalent_height
+def equivalent_height_for_maximum_width_method(self: Profile):
+    return self.cross_section.area / self.equivalent_width
+
+
 def test_solve(tmp_path: Path, caplog):
     caplog.set_level(logging.INFO, logger="pyroll")
 
-    import pyroll.wusatowski_spreading
+    import pyroll.sparling_spreading
     import pyroll.tension_spreading_interaction
 
     in_profile = Profile.round(
@@ -34,8 +44,8 @@ def test_solve(tmp_path: Path, caplog):
                 rotational_frequency=1
             ),
             gap=2e-3,
-            front_tension=25e6,
-            back_tension=0
+            front_tension=0,
+            back_tension=100e6 * 0.10
         )
     ])
 

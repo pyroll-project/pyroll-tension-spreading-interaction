@@ -49,6 +49,9 @@ def log_tension_elongation(self: BaseRollPass):
     second_coefficient = self.tension_model.m21 * self.rel_draught + self.tension_model.m22 * profile_aspect_ratio + self.tension_model.m23 * area_ratio
     third_coefficient = self.tension_model.m31 * self.rel_draught + self.tension_model.m32 * profile_aspect_ratio + self.tension_model.m33 * area_ratio
 
+    if relative_back_tension < 0:
+        return self.log_elongation * relative_back_tension + third_coefficient * relative_front_tension
+
     return first_coefficient * relative_back_tension ** 2 + second_coefficient * relative_back_tension + third_coefficient * relative_front_tension
 
 
